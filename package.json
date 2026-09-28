@@ -1,79 +1,245 @@
 {
-	"name": "claude-agents",
-	"displayName": "Claude Agents",
-	"description": "Edit global Claude Code memory (CLAUDE.md), subagents and permission rules in a friendly UI",
-	"version": "0.1.0",
+	"name": "claude-helper",
+	"displayName": "Claude Helper",
+	"description": "Edit global Claude Code memory (CLAUDE.md), subagents and permission rules, get sound and popup notifications for Claude Code events and generate commit messages",
+	"version": "0.2.0",
 	"publisher": "fristaylo",
 	"license": "MIT",
 	"icon": "resources/icon.png",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/fristaylo/claude-agents.git"
+		"url": "https://github.com/fristaylo/claude-helper.git"
 	},
 	"bugs": {
-		"url": "https://github.com/fristaylo/claude-agents/issues"
+		"url": "https://github.com/fristaylo/claude-helper/issues"
 	},
-	"homepage": "https://github.com/fristaylo/claude-agents#readme",
+	"homepage": "https://github.com/fristaylo/claude-helper#readme",
 	"engines": {
 		"vscode": "^1.94.0"
 	},
 	"categories": ["AI", "Other"],
-	"keywords": ["claude", "claude code", "anthropic", "agents", "subagents", "CLAUDE.md", "permissions"],
+	"keywords": [
+		"claude",
+		"claude code",
+		"anthropic",
+		"agents",
+		"subagents",
+		"CLAUDE.md",
+		"permissions",
+		"notifications",
+		"commit message"
+	],
 	"main": "./dist/extension.js",
 	"activationEvents": ["onStartupFinished"],
 	"contributes": {
 		"configuration": {
-			"title": "Claude Agents",
+			"title": "Claude Helper",
 			"properties": {
-				"claudeAgents.configDir": {
+				"claudeHelper.configDir": {
 					"type": "string",
 					"default": "",
+					"scope": "application",
 					"markdownDescription": "Global Claude Code folder with `CLAUDE.md`, `agents/` and `settings.json`. Empty means `$CLAUDE_CONFIG_DIR` or `~/.claude`."
+				},
+				"claudeHelper.notifications.enabled": {
+					"type": "boolean",
+					"default": true,
+					"scope": "application",
+					"description": "Play sounds and show popups for Claude Code events. Same as the bell button in the status bar."
+				},
+				"claudeHelper.notifications.events": {
+					"type": "object",
+					"scope": "application",
+					"description": "Sound, popup and sound file for each Claude Code event.",
+					"properties": {
+						"done": {
+							"type": "object",
+							"properties": {
+								"sound": {
+									"type": "boolean"
+								},
+								"popup": {
+									"type": "boolean"
+								},
+								"file": {
+									"type": "string"
+								}
+							}
+						},
+						"permission": {
+							"type": "object",
+							"properties": {
+								"sound": {
+									"type": "boolean"
+								},
+								"popup": {
+									"type": "boolean"
+								},
+								"file": {
+									"type": "string"
+								}
+							}
+						},
+						"question": {
+							"type": "object",
+							"properties": {
+								"sound": {
+									"type": "boolean"
+								},
+								"popup": {
+									"type": "boolean"
+								},
+								"file": {
+									"type": "string"
+								}
+							}
+						},
+						"subagent": {
+							"type": "object",
+							"properties": {
+								"sound": {
+									"type": "boolean"
+								},
+								"popup": {
+									"type": "boolean"
+								},
+								"file": {
+									"type": "string"
+								}
+							}
+						},
+						"commit": {
+							"type": "object",
+							"properties": {
+								"sound": {
+									"type": "boolean"
+								},
+								"popup": {
+									"type": "boolean"
+								},
+								"file": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"default": {
+						"done": {
+							"sound": true,
+							"popup": true,
+							"file": "chime-up-third"
+						},
+						"permission": {
+							"sound": true,
+							"popup": true,
+							"file": "bong"
+						},
+						"question": {
+							"sound": true,
+							"popup": true,
+							"file": "chime-question"
+						},
+						"subagent": {
+							"sound": false,
+							"popup": false,
+							"file": "kalimba-up"
+						},
+						"commit": {
+							"sound": true,
+							"popup": true,
+							"file": "marimba-up"
+						}
+					}
+				},
+				"claudeHelper.commit.prompt": {
+					"type": "string",
+					"scope": "application",
+					"editPresentation": "multilineText",
+					"description": "Instructions for generating commit messages.",
+					"default": "Follow the Conventional Commits format: <type>(<optional scope>): <subject>.\nTypes: feat, fix, docs, style, refactor, perf, test, build, ci, chore.\nSubject: imperative mood, lowercase, no trailing period, at most 72 characters.\nIf needed, add a blank line and a short bullet list of the key changes.\nWrite in English."
+				},
+				"claudeHelper.commit.model": {
+					"type": "string",
+					"enum": ["haiku", "sonnet", "opus"],
+					"default": "haiku",
+					"scope": "application",
+					"description": "Claude model for commit messages."
+				},
+				"claudeHelper.commit.claudePath": {
+					"type": "string",
+					"default": "",
+					"scope": "application",
+					"description": "Path to the claude executable. Empty = auto-detect."
+				},
+				"claudeHelper.commit.untracked": {
+					"type": "boolean",
+					"default": false,
+					"scope": "application",
+					"description": "Include new untracked files when nothing is staged."
 				}
 			}
 		},
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "claudeAgents",
-					"title": "Claude Agents",
+					"id": "claudeHelper",
+					"title": "Claude Helper",
 					"icon": "resources/activity.svg"
 				}
 			]
 		},
 		"views": {
-			"claudeAgents": [
+			"claudeHelper": [
 				{
 					"type": "webview",
-					"id": "claudeAgents.view",
-					"name": "Claude Agents"
+					"id": "claudeHelper.view",
+					"name": "Claude Helper"
 				}
 			]
 		},
 		"commands": [
 			{
-				"command": "claudeAgents.open",
+				"command": "claudeHelper.open",
 				"title": "Open in Editor",
-				"category": "Claude Agents",
+				"category": "Claude Helper",
 				"icon": "$(link-external)"
 			},
 			{
-				"command": "claudeAgents.refresh",
+				"command": "claudeHelper.refresh",
 				"title": "Refresh",
-				"category": "Claude Agents",
+				"category": "Claude Helper",
 				"icon": "$(refresh)"
+			},
+			{
+				"command": "claudeHelper.toggleNotifications",
+				"title": "Toggle Notifications",
+				"category": "Claude Helper",
+				"icon": "$(bell)"
+			},
+			{
+				"command": "claudeHelper.generateCommit",
+				"title": "Generate Commit Message",
+				"category": "Claude Helper",
+				"icon": "$(sparkle)"
 			}
 		],
 		"menus": {
+			"scm/title": [
+				{
+					"command": "claudeHelper.generateCommit",
+					"when": "scmProvider == git",
+					"group": "navigation"
+				}
+			],
 			"view/title": [
 				{
-					"command": "claudeAgents.refresh",
-					"when": "view == claudeAgents.view",
+					"command": "claudeHelper.refresh",
+					"when": "view == claudeHelper.view",
 					"group": "navigation@1"
 				},
 				{
-					"command": "claudeAgents.open",
-					"when": "view == claudeAgents.view",
+					"command": "claudeHelper.open",
+					"when": "view == claudeHelper.view",
 					"group": "navigation@2"
 				}
 			]

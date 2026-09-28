@@ -4,14 +4,16 @@ import { StrictMode, useCallback, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { State } from "../claude";
 import { Agents } from "./Agents";
+import { Commits } from "./Commits";
 import { Memory } from "./Memory";
+import { Notifications } from "./Notifications";
 import { Permissions } from "./Permissions";
 import { type Toast, call, onChanged, onToast, run } from "./rpc";
 import { Icon, Spark } from "./ui";
 
 const LRM = String.fromCharCode(0x200e);
 
-type Tab = "agents" | "memory" | "permissions";
+type Tab = "agents" | "memory" | "permissions" | "notifications" | "commits";
 
 function App() {
 	const [state, setState] = useState<State>();
@@ -58,6 +60,8 @@ function App() {
 			label: "Permissions",
 			count: deny.length + ask.length + allow.length,
 		},
+		{ id: "notifications", icon: "bell", label: "Notifications" },
+		{ id: "commits", icon: "git-commit", label: "Commits" },
 	];
 
 	return (
@@ -68,8 +72,8 @@ function App() {
 						<Spark />
 					</span>
 					<div>
-						<h1>Claude Agents</h1>
-						<p className="muted small">Global Claude Code configuration</p>
+						<h1>Claude Helper</h1>
+						<p className="muted small">Claude Code config, notifications and commits</p>
 					</div>
 				</div>
 				<div className="dir" title={state.dir}>
@@ -124,6 +128,12 @@ function App() {
 				</section>
 				<section hidden={tab !== "permissions"}>
 					<Permissions rules={state.rules} error={state.settingsError} />
+				</section>
+				<section hidden={tab !== "notifications"}>
+					<Notifications settings={state.notify} />
+				</section>
+				<section hidden={tab !== "commits"}>
+					<Commits settings={state.commit} />
 				</section>
 			</main>
 			<Toaster />

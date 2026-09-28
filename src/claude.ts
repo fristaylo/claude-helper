@@ -3,10 +3,12 @@ import { homedir } from "node:os";
 import { basename, join } from "node:path";
 import * as vscode from "vscode";
 import { parseAgent, serializeAgent } from "./agent";
+import { commitApi, commitSettings } from "./commit";
+import { notifyApi, notifySettings } from "./notify";
 import { AGENT_NAME, KINDS, type Meta, type Rules } from "./shared";
 
 const setting = () =>
-	vscode.workspace.getConfiguration("claudeAgents").get<string>("configDir")?.trim() ?? "";
+	vscode.workspace.getConfiguration("claudeHelper").get<string>("configDir")?.trim() ?? "";
 
 export function configDir() {
 	const custom = setting();
@@ -55,6 +57,8 @@ async function load() {
 		agents: agents.sort((a, b) => a.file.localeCompare(b.file)),
 		rules,
 		settingsError,
+		notify: notifySettings(),
+		commit: commitSettings(),
 	};
 }
 
@@ -126,13 +130,25 @@ async function pickDir() {
 			defaultUri: vscode.Uri.file(configDir()),
 			openLabel: "Use as Claude folder",
 		})) ?? [];
-	if (dir) await vscode.workspace.getConfiguration("claudeAgents").update("configDir", dir.fsPath, true);
+	if (dir) await vscode.workspace.getConfiguration("claudeHelper").update("configDir", dir.fsPath, true);
 }
 
 async function resetDir() {
-	await vscode.workspace.getConfiguration("claudeAgents").update("configDir", undefined, true);
+	await vscode.workspace.getConfiguration("claudeHelper").update("configDir", undefined, true);
 }
 
-export const api = { load, saveMemory, saveAgent, deleteAgent, setRules, open, reveal, pickDir, resetDir };
+export const api = {
+	load,
+	saveMemory,
+	saveAgent,
+	deleteAgent,
+	setRules,
+	open,
+	reveal,
+	pickDir,
+	resetDir,
+	...notifyApi,
+	...commitApi,
+};
 export type Api = typeof api;
 export type State = Awaited<ReturnType<typeof load>>;

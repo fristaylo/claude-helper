@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => ({
 		lib: {
 			entry: "src/view/main.tsx",
 			formats: ["iife"],
-			name: "ClaudeAgentsView",
+			name: "ClaudeHelperView",
 			fileName: () => "view.js",
 		},
 	},

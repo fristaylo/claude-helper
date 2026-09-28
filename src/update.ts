@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-const LATEST = "https://api.github.com/repos/fristaylo/claude-agents/releases/latest";
+const LATEST = "https://api.github.com/repos/fristaylo/claude-helper/releases/latest";
 
 // ponytail: every open window checks on its own; add a globalState throttle if that gets noisy
 export async function checkForUpdate(ctx: vscode.ExtensionContext) {
@@ -24,7 +24,7 @@ export async function checkForUpdate(ctx: vscode.ExtensionContext) {
 	);
 	await vscode.commands.executeCommand("workbench.extensions.installExtension", vsix);
 	const pick = await vscode.window.showInformationMessage(
-		`Claude Agents updated to ${latest}.`,
+		`Claude Helper updated to ${latest}.`,
 		"Reload Window",
 	);
 	if (pick) vscode.commands.executeCommand("workbench.action.reloadWindow");

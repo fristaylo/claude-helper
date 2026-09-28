@@ -1,10 +1,12 @@
 import { randomBytes } from "node:crypto";
 import * as vscode from "vscode";
 import { api, configDir } from "./claude";
+import { registerCommit } from "./commit";
+import { startNotifications } from "./notify";
 import { checkForUpdate } from "./update";
 
 export function activate(ctx: vscode.ExtensionContext) {
-	checkForUpdate(ctx).catch((e) => console.warn("Claude Agents: update check failed", e));
+	checkForUpdate(ctx).catch((e) => console.warn("Claude Helper: update check failed", e));
 
 	const webviews = new Set<vscode.Webview>();
 	const refresh = () => {
@@ -47,6 +49,8 @@ export function activate(ctx: vscode.ExtensionContext) {
 		});
 	};
 	watch();
+	startNotifications(ctx, configDir);
+	registerCommit(ctx);
 
 	let panel: vscode.WebviewPanel | undefined;
 	ctx.subscriptions.push(
@@ -56,7 +60,7 @@ export function activate(ctx: vscode.ExtensionContext) {
 			},
 		},
 		vscode.window.registerWebviewViewProvider(
-			"claudeAgents.view",
+			"claudeHelper.view",
 			{
 				resolveWebviewView(view) {
 					host(view.webview, view.onDidDispose);
@@ -65,11 +69,11 @@ export function activate(ctx: vscode.ExtensionContext) {
 			},
 			{ webviewOptions: { retainContextWhenHidden: true } },
 		),
-		vscode.commands.registerCommand("claudeAgents.open", () => {
+		vscode.commands.registerCommand("claudeHelper.open", () => {
 			if (panel) return panel.reveal();
 			panel = vscode.window.createWebviewPanel(
-				"claudeAgents.panel",
-				"Claude Agents",
+				"claudeHelper.panel",
+				"Claude Helper",
 				vscode.ViewColumn.Active,
 				{
 					retainContextWhenHidden: true,
@@ -81,10 +85,10 @@ export function activate(ctx: vscode.ExtensionContext) {
 			});
 			host(panel.webview, panel.onDidDispose);
 		}),
-		vscode.commands.registerCommand("claudeAgents.refresh", refresh),
+		vscode.commands.registerCommand("claudeHelper.refresh", refresh),
 		vscode.workspace.onDidChangeConfiguration((e) => {
-			if (!e.affectsConfiguration("claudeAgents.configDir")) return;
-			watch();
+			if (!e.affectsConfiguration("claudeHelper")) return;
+			if (e.affectsConfiguration("claudeHelper.configDir")) watch();
 			refresh();
 		}),
 	);
@@ -105,7 +109,7 @@ function html(webview: vscode.Webview, script: vscode.Uri) {
 	<meta charset="UTF-8">
 	<meta http-equiv="Content-Security-Policy" content="${csp}">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Claude Agents</title>
+	<title>Claude Helper</title>
 </head>
 <body>
 	<div id="root"></div>
