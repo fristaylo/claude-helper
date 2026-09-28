@@ -1,0 +1,112 @@
+{
+	"name": "claude-agents",
+	"displayName": "Claude Agents",
+	"description": "Edit global Claude Code memory (CLAUDE.md), subagents and permission rules in a friendly UI",
+	"version": "0.1.0",
+	"publisher": "fristaylo",
+	"license": "MIT",
+	"icon": "resources/icon.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/fristaylo/claude-agents.git"
+	},
+	"bugs": {
+		"url": "https://github.com/fristaylo/claude-agents/issues"
+	},
+	"homepage": "https://github.com/fristaylo/claude-agents#readme",
+	"engines": {
+		"vscode": "^1.94.0"
+	},
+	"categories": ["AI", "Other"],
+	"keywords": ["claude", "claude code", "anthropic", "agents", "subagents", "CLAUDE.md", "permissions"],
+	"main": "./dist/extension.js",
+	"activationEvents": ["onStartupFinished"],
+	"contributes": {
+		"configuration": {
+			"title": "Claude Agents",
+			"properties": {
+				"claudeAgents.configDir": {
+					"type": "string",
+					"default": "",
+					"markdownDescription": "Global Claude Code folder with `CLAUDE.md`, `agents/` and `settings.json`. Empty means `$CLAUDE_CONFIG_DIR` or `~/.claude`."
+				}
+			}
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "claudeAgents",
+					"title": "Claude Agents",
+					"icon": "resources/activity.svg"
+				}
+			]
+		},
+		"views": {
+			"claudeAgents": [
+				{
+					"type": "webview",
+					"id": "claudeAgents.view",
+					"name": "Claude Agents"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "claudeAgents.open",
+				"title": "Open in Editor",
+				"category": "Claude Agents",
+				"icon": "$(link-external)"
+			},
+			{
+				"command": "claudeAgents.refresh",
+				"title": "Refresh",
+				"category": "Claude Agents",
+				"icon": "$(refresh)"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "claudeAgents.refresh",
+					"when": "view == claudeAgents.view",
+					"group": "navigation@1"
+				},
+				{
+					"command": "claudeAgents.open",
+					"when": "view == claudeAgents.view",
+					"group": "navigation@2"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"build": "vite build --config vite.extension.config.ts && vite build",
+		"watch": "vite build --watch",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome check .",
+		"fix": "biome check --write .",
+		"check": "bun run src/agent.check.ts",
+		"package": "bun run typecheck && bun run check && bun run build && bunx @vscode/vsce package --no-dependencies -o releases/"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.10.0",
+		"@types/react": "^18.3.12",
+		"@types/react-dom": "^18.3.1",
+		"@types/vscode": "^1.94.0",
+		"@vitejs/plugin-react": "^4.3.4",
+		"@vscode/vsce": "^3.2.0",
+		"sass": "^1.83.4",
+		"typescript": "^5.7.3",
+		"vite": "^6.0.7",
+		"vite-plugin-css-injected-by-js": "^3.5.2"
+	},
+	"dependencies": {
+		"@vscode/codicons": "^0.0.45",
+		"marked": "^15.0.6",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
+		"yaml": "^2.7.0"
+	},
+	"trustedDependencies": ["@biomejs/biome"]
+}

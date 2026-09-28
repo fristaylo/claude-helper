@@ -1,0 +1,13 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"files": { "ignore": ["dist", "releases", "node_modules"] },
+	"formatter": { "indentStyle": "tab", "lineWidth": 110 },
+	"linter": {
+		"rules": {
+			"recommended": true,
+			"suspicious": { "noExplicitAny": "off", "noArrayIndexKey": "off" },
+			"a11y": { "useKeyWithClickEvents": "off", "noAutofocus": "off" },
+			"security": { "noDangerouslySetInnerHtml": "off" }
+		}
+	}
+}

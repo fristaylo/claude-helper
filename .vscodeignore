@@ -1,0 +1,17 @@
+.vscode/**
+.vscode-test/**
+out/**
+node_modules/**
+src/**
+.gitignore
+.vscodeignore
+biome.json
+bun.lock
+bun.lockb
+**/tsconfig.json
+**/*.config.ts
+**/*.map
+**/*.ts
+releases/**
+.claude/**
+.github/**

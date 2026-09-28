@@ -1,0 +1,33 @@
+name: Release
+
+# Releases the version from package.json when a pushed commit message contains "--fix".
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: contains(toJSON(github.event.commits.*.message), '--fix')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - id: version
+        run: echo "tag=v$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
+      - name: Version must be bumped
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/${{ steps.version.outputs.tag }}"; then
+            echo "::error::${{ steps.version.outputs.tag }} is already released, bump version in package.json"
+            exit 1
+          fi
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: mkdir -p releases && bun run package
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          files: releases/*.vsix
+          generate_release_notes: true
