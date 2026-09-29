@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+- Fixed self-update: the downloaded `.vsix` was never installed ("No Servers"). Versions up to 0.3.0 cannot update
+  themselves, install this one manually once
+
 ## 0.3.0
 
 - Agents: icon picker (stored as `icon` in the frontmatter) and effort level (`effort`: low, medium, high, xhigh,

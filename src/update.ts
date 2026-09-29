@@ -22,7 +22,7 @@ export async function checkForUpdate(ctx: vscode.ExtensionContext) {
 		vsix,
 		new Uint8Array(await (await fetch(asset.browser_download_url)).arrayBuffer()),
 	);
-	await vscode.commands.executeCommand("workbench.extensions.installExtension", vsix);
+	await vscode.commands.executeCommand("workbench.extensions.installExtension", vscode.Uri.file(vsix.fsPath));
 	const pick = await vscode.window.showInformationMessage(
 		`Claude Helper updated to ${latest}.`,
 		"Reload Window",

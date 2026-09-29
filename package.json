@@ -2,7 +2,7 @@
 	"name": "claude-helper",
 	"displayName": "Claude Helper",
 	"description": "Edit global Claude Code memory (CLAUDE.md), subagents and permission rules, get sound and popup notifications for Claude Code events and generate commit messages",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"publisher": "fristaylo",
 	"license": "MIT",
 	"icon": "resources/icon.png",
