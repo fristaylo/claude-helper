@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- Agents: icon picker (stored as `icon` in the frontmatter) and effort level (`effort`: low, medium, high, xhigh,
+  max or inherit)
+- Commits: effort level for `claude -p` (`claudeHelper.commit.effort`), CLI default when empty
+- Notifications: per-event volume, vertical slider on hover over the speaker icon
+- Notifications: "Task finished" no longer fires while the session waits for background subagents or workflows
+
 ## 0.2.0
 
 - Renamed to Claude Helper. The extension ID is now `fristaylo.claude-helper`: uninstall the old
