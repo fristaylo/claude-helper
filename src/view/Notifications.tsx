@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
 	type EventConfig,
 	NOTIFY_EVENTS,
@@ -106,15 +107,7 @@ export function Notifications({ settings }: { settings: NotifySettings }) {
 												</option>
 											))}
 										</select>
-										<button
-											type="button"
-											className="icon-btn"
-											title="Preview"
-											disabled={off}
-											onClick={() => run(call("previewSound", cfg.file))}
-										>
-											<Icon name="play" />
-										</button>
+										<SoundControls cfg={cfg} off={off} onVolume={(volume) => setEvent(e, { volume })} />
 									</div>
 								</td>
 							</tr>
@@ -129,4 +122,53 @@ export function Notifications({ settings }: { settings: NotifySettings }) {
 function soundLabel(file: string): string {
 	const name = file.replaceAll("-", " ");
 	return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+function SoundControls({
+	cfg,
+	off,
+	onVolume,
+}: {
+	cfg: EventConfig;
+	off: boolean;
+	onVolume: (volume: number) => void;
+}) {
+	const [volume, setVolume] = useState(cfg.volume);
+	useEffect(() => setVolume(cfg.volume), [cfg.volume]);
+	const commit = () => volume !== cfg.volume && onVolume(volume);
+	const disabled = off || !cfg.sound;
+
+	return (
+		<>
+			<div className="volume">
+				<button type="button" className="icon-btn" title={`Volume ${volume}%`} disabled={disabled}>
+					<Icon name={volume === 0 ? "mute" : "unmute"} />
+				</button>
+				{!disabled && (
+					<div className="volume-pop">
+						<input
+							type="range"
+							min={0}
+							max={100}
+							value={volume}
+							aria-label="Volume"
+							onChange={(x) => setVolume(Number(x.target.value))}
+							onPointerUp={commit}
+							onKeyUp={commit}
+						/>
+						<span className="small">{volume}%</span>
+					</div>
+				)}
+			</div>
+			<button
+				type="button"
+				className="icon-btn"
+				title="Preview"
+				disabled={off}
+				onClick={() => run(call("previewSound", cfg.file, volume))}
+			>
+				<Icon name="play" />
+			</button>
+		</>
+	);
 }

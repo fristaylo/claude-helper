@@ -50,7 +50,7 @@
 				"claudeHelper.notifications.events": {
 					"type": "object",
 					"scope": "application",
-					"description": "Sound, popup and sound file for each Claude Code event.",
+					"description": "Sound, popup, sound file and volume for each Claude Code event.",
 					"properties": {
 						"done": {
 							"type": "object",
@@ -63,6 +63,11 @@
 								},
 								"file": {
 									"type": "string"
+								},
+								"volume": {
+									"type": "number",
+									"minimum": 0,
+									"maximum": 100
 								}
 							}
 						},
@@ -77,6 +82,11 @@
 								},
 								"file": {
 									"type": "string"
+								},
+								"volume": {
+									"type": "number",
+									"minimum": 0,
+									"maximum": 100
 								}
 							}
 						},
@@ -91,6 +101,11 @@
 								},
 								"file": {
 									"type": "string"
+								},
+								"volume": {
+									"type": "number",
+									"minimum": 0,
+									"maximum": 100
 								}
 							}
 						},
@@ -105,6 +120,11 @@
 								},
 								"file": {
 									"type": "string"
+								},
+								"volume": {
+									"type": "number",
+									"minimum": 0,
+									"maximum": 100
 								}
 							}
 						},
@@ -119,6 +139,11 @@
 								},
 								"file": {
 									"type": "string"
+								},
+								"volume": {
+									"type": "number",
+									"minimum": 0,
+									"maximum": 100
 								}
 							}
 						}
@@ -127,27 +152,32 @@
 						"done": {
 							"sound": true,
 							"popup": true,
-							"file": "chime-up-third"
+							"file": "chime-up-third",
+							"volume": 100
 						},
 						"permission": {
 							"sound": true,
 							"popup": true,
-							"file": "bong"
+							"file": "bong",
+							"volume": 100
 						},
 						"question": {
 							"sound": true,
 							"popup": true,
-							"file": "chime-question"
+							"file": "chime-question",
+							"volume": 100
 						},
 						"subagent": {
 							"sound": false,
 							"popup": false,
-							"file": "kalimba-up"
+							"file": "kalimba-up",
+							"volume": 100
 						},
 						"commit": {
 							"sound": true,
 							"popup": true,
-							"file": "marimba-up"
+							"file": "marimba-up",
+							"volume": 100
 						}
 					}
 				},
@@ -164,6 +194,14 @@
 					"default": "haiku",
 					"scope": "application",
 					"description": "Claude model for commit messages."
+				},
+				"claudeHelper.commit.effort": {
+					"type": "string",
+					"enum": ["", "low", "medium", "high", "xhigh", "max"],
+					"enumDescriptions": ["Claude CLI default"],
+					"default": "",
+					"scope": "application",
+					"description": "Effort level for commit messages. Empty = Claude CLI default."
 				},
 				"claudeHelper.commit.claudePath": {
 					"type": "string",

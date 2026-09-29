@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { COMMIT_MODELS, type CommitModel, type CommitSettings } from "../shared";
+import { COMMIT_MODELS, type CommitModel, type CommitSettings, EFFORTS } from "../shared";
 import { call, onSaveKey, run } from "./rpc";
 import { Icon } from "./ui";
 
@@ -56,6 +56,17 @@ export function Commits({ settings }: { settings: CommitSettings }) {
 					<span className="label">Model</span>
 					<select value={settings.model} onChange={(e) => save({ model: e.target.value as CommitModel })}>
 						{COMMIT_MODELS.map((m) => (
+							<option key={m} value={m}>
+								{m}
+							</option>
+						))}
+					</select>
+				</label>
+				<label className="field">
+					<span className="label">Effort</span>
+					<select value={settings.effort} onChange={(e) => save({ effort: e.target.value })}>
+						<option value="">default</option>
+						{EFFORTS.map((m) => (
 							<option key={m} value={m}>
 								{m}
 							</option>

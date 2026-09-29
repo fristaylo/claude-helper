@@ -13,11 +13,11 @@ import * as vscode from "vscode";
 import type { EventConfig, NotifyEvent, NotifyPatch, NotifySettings } from "./shared";
 
 const DEFAULTS: Record<NotifyEvent, EventConfig> = {
-	done: { sound: true, popup: true, file: "chime-up-third" },
-	permission: { sound: true, popup: true, file: "bong" },
-	question: { sound: true, popup: true, file: "chime-question" },
-	subagent: { sound: false, popup: false, file: "kalimba-up" },
-	commit: { sound: true, popup: true, file: "marimba-up" },
+	done: { sound: true, popup: true, file: "chime-up-third", volume: 100 },
+	permission: { sound: true, popup: true, file: "bong", volume: 100 },
+	question: { sound: true, popup: true, file: "chime-question", volume: 100 },
+	subagent: { sound: false, popup: false, file: "kalimba-up", volume: 100 },
+	commit: { sound: true, popup: true, file: "marimba-up", volume: 100 },
 };
 
 const HOOKS: { hook: string; event: NotifyEvent; matcher?: string }[] = [
@@ -100,7 +100,7 @@ export function notify(event: NotifyEvent, detail?: string): void {
 	const s = notifySettings();
 	if (!s.enabled) return;
 	const cfg = s.events[event];
-	if (cfg.sound) play(cfg.file);
+	if (cfg.sound) play(cfg.file, cfg.volume);
 	if (cfg.popup)
 		vscode.window.showInformationMessage(
 			detail ? `${TEXT[event]}${event === "permission" ? ": " : " · "}${detail}` : TEXT[event],
@@ -122,6 +122,7 @@ export function notifySettings(): NotifySettings {
 	const events = Object.fromEntries(
 		Object.entries(DEFAULTS).map(([k, v]) => {
 			const e = { ...v, ...saved[k as NotifyEvent] };
+			if (!Number.isFinite(e.volume)) e.volume = v.volume;
 			return [k, sounds.includes(e.file) ? e : { ...e, file: v.file }];
 		}),
 	) as Record<NotifyEvent, EventConfig>;
@@ -135,9 +136,9 @@ async function setNotify(patch: NotifyPatch) {
 	return true;
 }
 
-async function previewSound(file: string) {
+async function previewSound(file: string, volume: number) {
 	if (!notifySettings().sounds.includes(file)) throw new Error(`Unknown sound: ${file}`);
-	play(file);
+	play(file, volume);
 }
 
 export const notifyApi = { setNotify, previewSound };
@@ -190,7 +191,7 @@ function installHooks(root: string): string | undefined {
 
 function receive(path: string, event: string, started: number) {
 	if (!HOOKS.some((h) => h.event === event)) return;
-	let payload: { cwd?: string; tool_name?: string };
+	let payload: { cwd?: string; tool_name?: string; background_tasks?: { type?: string }[] };
 	try {
 		if (statSync(path).mtimeMs < started) return;
 		payload = JSON.parse(readFileSync(path, "utf8"));
@@ -202,6 +203,9 @@ function receive(path: string, event: string, started: number) {
 	if (event === "permission") {
 		if (payload.tool_name === "AskUserQuestion") return;
 		notify(event, payload.tool_name ? `${payload.tool_name} · ${basename(cwd)}` : basename(cwd));
+	} else if (event === "done") {
+		if (payload.background_tasks?.some((t) => t.type === "subagent" || t.type === "workflow")) return;
+		notify(event, basename(cwd));
 	} else notify(event as NotifyEvent, basename(cwd));
 }
 
@@ -211,7 +215,9 @@ function inside(folder: string, cwd: string) {
 	return r !== ".." && !r.startsWith(`..${sep}`) && !isAbsolute(r);
 }
 
-function play(file: string) {
+function play(file: string, volume: number) {
+	const v = Math.min(100, Math.max(0, volume)) / 100;
+	if (!v) return;
 	const path = join(soundsDir, `${file}.wav`);
 	const warn = (e: Error | null) => e && console.warn("Claude Helper: play failed", e);
 	if (process.platform === "win32")
@@ -221,13 +227,18 @@ function play(file: string) {
 				"-NoProfile",
 				"-NonInteractive",
 				"-Command",
-				`(New-Object Media.SoundPlayer '${path.replace(/'/g, "''")}').PlaySync()`,
+				`Add-Type -AssemblyName PresentationCore; $p = New-Object System.Windows.Media.MediaPlayer; $p.Open([Uri]'${path.replace(/'/g, "''")}'); $p.Volume = ${v.toFixed(2)}; $p.Play(); $i = 0; while (-not $p.NaturalDuration.HasTimeSpan -and $i -lt 40) { Start-Sleep -Milliseconds 50; $i++ }; if ($p.NaturalDuration.HasTimeSpan) { Start-Sleep -Milliseconds ([int]$p.NaturalDuration.TimeSpan.TotalMilliseconds + 100) }; $p.Close()`,
 			],
 			{ windowsHide: true },
 			warn,
 		);
-	else if (process.platform === "darwin") execFile("afplay", [path], warn);
-	else execFile("paplay", [path], (e) => e && execFile("aplay", [path], warn));
+	else if (process.platform === "darwin") execFile("afplay", ["-v", v.toFixed(2), path], warn);
+	else
+		execFile(
+			"paplay",
+			[`--volume=${Math.round(v * 65536)}`, path],
+			(e) => e && execFile("aplay", [path], warn),
+		);
 }
 
 function mergeHooks(hooks: Record<string, HookGroup[]>, command: (e: NotifyEvent) => string) {

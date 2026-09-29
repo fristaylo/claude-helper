@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 import * as vscode from "vscode";
 import { notify } from "./notify";
-import { COMMIT_MODELS, type CommitModel, type CommitSettings } from "./shared";
+import { COMMIT_MODELS, type CommitModel, type CommitSettings, EFFORTS } from "./shared";
 
 interface Repo {
 	rootUri: vscode.Uri;
@@ -39,6 +39,7 @@ export function registerCommit(ctx: vscode.ExtensionContext): void {
 						askClaude(
 							await findClaude(settings.claudePath),
 							settings.model,
+							settings.effort,
 							root,
 							`${settings.prompt}\n\nWrite a git commit message for the diff below. Reply with the commit message only: no preamble, no quotes, no code fences.\n\n${diff}`,
 						),
@@ -57,9 +58,11 @@ export function registerCommit(ctx: vscode.ExtensionContext): void {
 export function commitSettings(): CommitSettings {
 	const c = vscode.workspace.getConfiguration("claudeHelper");
 	const model = c.get<string>("commit.model", "haiku");
+	const effort = c.get<string>("commit.effort", "");
 	return {
 		prompt: c.get<string>("commit.prompt", ""),
 		model: COMMIT_MODELS.includes(model as CommitModel) ? (model as CommitModel) : "haiku",
+		effort: EFFORTS.includes(effort) ? effort : "",
 		claudePath: c.get<string>("commit.claudePath", ""),
 		untracked: c.get<boolean>("commit.untracked", false),
 	};
@@ -109,11 +112,12 @@ async function collectDiff(root: string, untracked: boolean) {
 	return diff.length > LIMIT ? `${diff.slice(0, LIMIT)}\n[diff truncated]` : diff;
 }
 
-function askClaude(bin: string, model: CommitModel, cwd: string, prompt: string) {
+function askClaude(bin: string, model: CommitModel, effort: string, cwd: string, prompt: string) {
 	const args = [
 		"-p",
 		"--model",
 		model,
+		...(effort ? ["--effort", effort] : []),
 		"--tools",
 		"",
 		"--strict-mcp-config",

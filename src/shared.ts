@@ -9,6 +9,7 @@ export interface Agent {
 
 export const KINDS: Kind[] = ["deny", "ask", "allow"];
 export const AGENT_NAME = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+export const EFFORTS = ["low", "medium", "high", "xhigh", "max"];
 
 export type NotifyEvent = "done" | "permission" | "question" | "subagent" | "commit";
 export const NOTIFY_EVENTS: NotifyEvent[] = ["done", "permission", "question", "subagent", "commit"];
@@ -16,6 +17,7 @@ export interface EventConfig {
 	sound: boolean;
 	popup: boolean;
 	file: string;
+	volume: number;
 }
 export interface NotifySettings {
 	enabled: boolean;
@@ -31,6 +33,7 @@ export const COMMIT_MODELS: CommitModel[] = ["haiku", "sonnet", "opus"];
 export interface CommitSettings {
 	prompt: string;
 	model: CommitModel;
+	effort: string;
 	claudePath: string;
 	untracked: boolean;
 }

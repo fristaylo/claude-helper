@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AGENT_NAME, type Agent, type Meta } from "../shared";
+import { AGENT_NAME, type Agent, EFFORTS, type Meta } from "../shared";
 import { call, onSaveKey, run } from "./rpc";
 import { Empty, Icon, Segmented } from "./ui";
 
@@ -14,6 +14,32 @@ const COLORS: Record<string, string> = {
 	pink: "#e275ad",
 };
 const MODELS = ["inherit", "sonnet", "opus", "haiku"];
+const ICONS = [
+	"hubot",
+	"robot",
+	"rocket",
+	"beaker",
+	"bug",
+	"code",
+	"terminal",
+	"tools",
+	"book",
+	"search",
+	"shield",
+	"lock",
+	"zap",
+	"flame",
+	"lightbulb",
+	"eye",
+	"checklist",
+	"git-merge",
+	"database",
+	"cloud",
+	"globe",
+	"paintcan",
+	"telescope",
+	"mortar-board",
+];
 const TOOLS = [
 	"Read",
 	"Write",
@@ -32,6 +58,7 @@ const TOOLS = [
 
 const agentName = (a: Agent) => String(a.meta.name || a.file.replace(/\.md$/, ""));
 const agentColor = (meta: Meta) => COLORS[String(meta.color)] ?? "var(--accent)";
+const agentIcon = (meta: Meta) => (ICONS.includes(String(meta.icon)) ? String(meta.icon) : "hubot");
 const toolsOf = (meta: Meta) => {
 	const t = meta.tools;
 	if (Array.isArray(t)) return t.map(String);
@@ -90,12 +117,13 @@ export function Agents({ agents }: { agents: Agent[] }) {
 							>
 								<div className="card-head">
 									<span className="avatar">
-										<Icon name="hubot" />
+										<Icon name={agentIcon(a.meta)} />
 									</span>
 									<div className="card-title">
 										<div className="name">{agentName(a)}</div>
 										<div className="chips">
 											<span className="chip">{String(a.meta.model || "inherit")}</span>
+											{!!a.meta.effort && <span className="chip">{String(a.meta.effort)}</span>}
 											<span className="chip">{tools.length ? `${tools.length} tools` : "all tools"}</span>
 										</div>
 									</div>
@@ -118,6 +146,8 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 		description: String(agent?.meta.description ?? ""),
 		model: String(agent?.meta.model || "inherit"),
 		color: String(agent?.meta.color ?? ""),
+		icon: String(agent?.meta.icon ?? ""),
+		effort: String(agent?.meta.effort ?? ""),
 		tools: agent ? toolsOf(agent.meta) : [],
 		prompt: agent?.prompt ?? "",
 	}));
@@ -131,6 +161,8 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 		set("tools", form.tools.includes(t) ? form.tools.filter((x) => x !== t) : [...form.tools, t]);
 	const nameError = form.name && !AGENT_NAME.test(form.name);
 	const models = MODELS.includes(form.model) ? MODELS : [...MODELS, form.model];
+	const efforts = ["", ...EFFORTS];
+	if (!efforts.includes(form.effort)) efforts.push(form.effort);
 
 	const save = async () => {
 		const meta: Meta = {
@@ -140,6 +172,8 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 			tools: form.tools.join(", "),
 			model: form.model,
 			color: form.color,
+			icon: form.icon,
+			effort: form.effort,
 		};
 		const next = await run(call("saveAgent", file, meta, form.prompt), `Agent “${form.name}” saved`);
 		if (!next) return;
@@ -171,7 +205,7 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 					<Icon name="arrow-left" />
 				</button>
 				<span className="avatar small">
-					<Icon name="hubot" />
+					<Icon name={agentIcon(form)} />
 				</span>
 				<h2 className="title">{form.name || "New agent"}</h2>
 				{dirty && <span className="dot" title="Unsaved changes" />}
@@ -248,6 +282,15 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 					</div>
 
 					<div className="field">
+						<span className="label">Effort</span>
+						<Segmented
+							value={form.effort}
+							onChange={(v) => set("effort", v)}
+							options={efforts.map((e) => ({ value: e, label: e || "inherit" }))}
+						/>
+					</div>
+
+					<div className="field">
 						<span className="label">Color</span>
 						<div className="swatches">
 							<button
@@ -267,6 +310,23 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 									style={{ background: hex }}
 									onClick={() => set("color", c)}
 								/>
+							))}
+						</div>
+					</div>
+
+					<div className="field">
+						<span className="label">Icon</span>
+						<div className="swatches">
+							{ICONS.map((i) => (
+								<button
+									type="button"
+									key={i}
+									title={i}
+									className={`swatch glyph ${agentIcon(form) === i ? "on" : ""}`}
+									onClick={() => set("icon", i)}
+								>
+									<Icon name={i} />
+								</button>
 							))}
 						</div>
 					</div>
