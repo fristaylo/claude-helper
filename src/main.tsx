@@ -45,7 +45,7 @@ function App() {
 	const [state, setState] = useState<State>();
 	const [error, setError] = useState<string>();
 	const [tab, setTab] = useState<Tab>("agents");
-	const [picked, setPicked] = useState<Scope>("project");
+	const [picked, setPicked] = useState<Scope>("global");
 	const [pluginsOpened, setPluginsOpened] = useState(false);
 
 	const load = useCallback(
