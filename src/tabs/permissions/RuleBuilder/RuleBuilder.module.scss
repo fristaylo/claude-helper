@@ -1,0 +1,37 @@
+.builder {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	padding: 10px;
+	border-radius: var(--radius);
+	background: var(--surface);
+	border: 1px solid var(--border);
+}
+
+.input {
+	display: flex;
+	align-items: center;
+	flex: 1 1 220px;
+	padding: 0 10px;
+	border-radius: 7px;
+	font-family: var(--mono);
+	background: var(--vscode-input-background);
+	border: 1px solid var(--vscode-input-border, var(--border));
+
+	&:focus-within {
+		border-color: var(--focus);
+	}
+
+	input {
+		flex: 1;
+		padding: 6px 2px;
+		border: none;
+		background: none;
+		box-shadow: none;
+		font-family: inherit;
+	}
+}
+
+.affix {
+	color: var(--muted);
+}

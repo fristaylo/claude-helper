@@ -1,0 +1,19 @@
+.chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 1px 7px;
+	border-radius: 20px;
+	font-size: 0.82em;
+	background: var(--surface-2);
+	color: var(--muted);
+}
+
+.accent {
+	background: var(--accent-soft);
+	color: var(--accent);
+}
+
+.tinted {
+	color: var(--t);
+	background: color-mix(in srgb, var(--t) 14%, transparent);
+}

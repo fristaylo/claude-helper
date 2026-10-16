@@ -1,0 +1,36 @@
+.check {
+	appearance: none;
+	display: inline-grid;
+	place-items: center;
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	padding: 0;
+	border-radius: 5px;
+	cursor: pointer;
+	vertical-align: middle;
+
+	&::after {
+		content: "";
+		width: 5px;
+		height: 9px;
+		margin-top: -2px;
+		border: solid #fff;
+		border-width: 0 2px 2px 0;
+		transform: rotate(45deg) scale(0);
+		transition: transform 0.12s;
+	}
+
+	&:checked {
+		background: var(--accent);
+		border-color: var(--accent);
+
+		&::after {
+			transform: rotate(45deg) scale(1);
+		}
+	}
+
+	&:disabled {
+		cursor: default;
+	}
+}

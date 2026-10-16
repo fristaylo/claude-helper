@@ -1,0 +1,38 @@
+.tools {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.toggle {
+	padding: 3px 10px;
+	border-radius: 20px;
+	font-size: 0.9em;
+	border-color: var(--border);
+	color: var(--muted);
+
+	&:hover {
+		color: var(--fg);
+		border-color: color-mix(in srgb, var(--agent) 50%, transparent);
+	}
+
+	&.on {
+		color: var(--fg);
+		border-color: color-mix(in srgb, var(--agent) 60%, transparent);
+		background: color-mix(in srgb, var(--agent) 18%, transparent);
+
+		:global(.codicon) {
+			font-size: 12px;
+			color: var(--agent);
+		}
+	}
+}
+
+.inlineAdd {
+	display: flex;
+	gap: 6px;
+
+	input {
+		flex: 1;
+	}
+}

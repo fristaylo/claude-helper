@@ -1,0 +1,10 @@
+.count {
+	min-width: 18px;
+	padding: 0 6px;
+	border-radius: 20px;
+	font-size: 0.8em;
+	line-height: 17px;
+	text-align: center;
+	background: var(--count-bg, var(--surface-2));
+	color: var(--count-fg, var(--muted));
+}

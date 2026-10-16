@@ -1,0 +1,72 @@
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+	gap: 12px;
+}
+
+.card {
+	--agent: var(--accent);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 10px;
+	padding: 14px 14px 14px 16px;
+	overflow: hidden;
+	text-align: left;
+	white-space: normal;
+	border-radius: 12px;
+	border-color: var(--border);
+	background:
+		linear-gradient(160deg, color-mix(in srgb, var(--agent) 9%, transparent), transparent 55%),
+		var(--surface);
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: 3px;
+		background: var(--agent);
+	}
+
+	&:hover {
+		transform: translateY(-2px);
+		border-color: color-mix(in srgb, var(--agent) 55%, transparent);
+		box-shadow: var(--shadow);
+	}
+}
+
+.head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 0;
+}
+
+.title {
+	min-width: 0;
+}
+
+.name {
+	font-weight: 600;
+	font-size: 1.05em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.chips {
+	display: flex;
+	gap: 4px;
+	margin-top: 3px;
+}
+
+.desc {
+	margin: 0;
+	color: var(--muted);
+	line-height: 1.5;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	word-break: break-word;
+}

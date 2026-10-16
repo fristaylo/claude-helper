@@ -26,7 +26,3 @@ Commits need the [Claude Code](https://docs.anthropic.com/en/docs/claude-code) C
 ## Credits
 
 Notification sounds: Kenney (kenney.nl, CC0) — Interface, Impact and Music Jingles packs; the rest are synthesized for this project.
-
-## License
-
-MIT. Claude Code is a product of Anthropic PBC and is not covered by this license.

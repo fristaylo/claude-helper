@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
 		sourcemap: mode !== "production",
 		cssCodeSplit: false,
 		lib: {
-			entry: "src/view/main.tsx",
+			entry: "src/main.tsx",
 			formats: ["iife"],
 			name: "ClaudeHelperView",
 			fileName: () => "view.js",

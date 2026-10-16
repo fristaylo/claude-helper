@@ -1,0 +1,66 @@
+.markdown {
+	min-height: calc(100vh - 230px);
+	padding: 8px 22px 18px;
+	border-radius: var(--radius);
+	border: 1px solid var(--border);
+	background: var(--surface);
+	line-height: 1.65;
+	overflow-wrap: anywhere;
+
+	h1,
+	h2,
+	h3,
+	h4 {
+		margin: 1.2em 0 0.5em;
+	}
+
+	h1,
+	h2 {
+		padding-bottom: 0.3em;
+		border-bottom: 1px solid var(--border);
+	}
+
+	a {
+		color: var(--vscode-textLink-foreground);
+	}
+
+	code {
+		padding: 1px 5px;
+		border-radius: 4px;
+		background: var(--surface-2);
+	}
+
+	pre {
+		padding: 12px 14px;
+		border-radius: 8px;
+		overflow-x: auto;
+		background: var(--vscode-textCodeBlock-background, var(--surface-2));
+
+		code {
+			padding: 0;
+			background: none;
+		}
+	}
+
+	blockquote {
+		margin: 0;
+		padding: 2px 14px;
+		border-left: 3px solid var(--accent);
+		color: var(--muted);
+	}
+
+	table {
+		border-collapse: collapse;
+	}
+
+	th,
+	td {
+		padding: 5px 10px;
+		border: 1px solid var(--border);
+	}
+
+	hr {
+		border: none;
+		border-top: 1px solid var(--border);
+	}
+}

@@ -1,0 +1,35 @@
+.search {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex: 1 1 180px;
+	max-width: 340px;
+	padding: 0 10px;
+	border-radius: 7px;
+	background: var(--vscode-input-background);
+	border: 1px solid var(--vscode-input-border, var(--border));
+	color: var(--muted);
+
+	&:focus-within {
+		border-color: var(--focus);
+	}
+
+	input {
+		flex: 1;
+		border: none;
+		background: none;
+		padding: 6px 0;
+		box-shadow: none;
+	}
+}
+
+.wide {
+	flex: none;
+	width: 100%;
+}
+
+.block {
+	flex: none;
+	width: 100%;
+	max-width: none;
+}

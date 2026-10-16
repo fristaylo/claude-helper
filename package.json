@@ -2,9 +2,8 @@
 	"name": "claude-helper",
 	"displayName": "Claude Helper",
 	"description": "Manage project and global Claude Code config: CLAUDE.md, subagents, skills, auto memory, permission rules and plugins. Get sound and popup notifications for Claude Code events and generate commit messages",
-	"version": "0.3.1",
+	"version": "0.4.0",
 	"publisher": "fristaylo",
-	"license": "MIT",
 	"icon": "resources/icon.png",
 	"repository": {
 		"type": "git",
@@ -292,8 +291,8 @@
 		"typecheck": "tsc --noEmit",
 		"lint": "biome check .",
 		"fix": "biome check --write .",
-		"check": "bun run src/agent.check.ts",
-		"package": "bun run typecheck && bun run check && bun run build && bunx @vscode/vsce package --no-dependencies -o releases/"
+		"check": "bun run src/host/check.ts",
+		"package": "bun run typecheck && bun run check && bun run build && bunx @vscode/vsce package --no-dependencies --skip-license -o releases/"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",

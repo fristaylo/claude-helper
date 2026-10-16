@@ -1,0 +1,32 @@
+.empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 40px 16px;
+	text-align: center;
+	border: 1px dashed var(--border);
+	border-radius: 14px;
+
+	p {
+		max-width: 440px;
+		margin: 0 0 6px;
+		color: var(--muted);
+		line-height: 1.55;
+	}
+}
+
+.icon {
+	display: grid;
+	place-items: center;
+	width: 52px;
+	height: 52px;
+	margin-bottom: 4px;
+	border-radius: 16px;
+	color: var(--accent);
+	background: var(--accent-soft);
+
+	:global(.codicon) {
+		font-size: 26px;
+	}
+}

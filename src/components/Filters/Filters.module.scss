@@ -1,0 +1,24 @@
+.filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+
+	button {
+		padding: 2px 9px;
+		border-radius: 20px;
+		border-color: var(--border);
+		color: var(--muted);
+		font-size: 0.9em;
+
+		&:hover {
+			color: var(--fg);
+			background: var(--accent-soft);
+		}
+
+		&.on {
+			color: var(--fg);
+			background: var(--accent-soft);
+			border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+		}
+	}
+}

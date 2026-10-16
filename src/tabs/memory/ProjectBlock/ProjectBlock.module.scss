@@ -1,0 +1,52 @@
+.memBlock {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.memList {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.acc {
+	--t: var(--muted);
+	overflow: hidden;
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--t);
+	border-radius: 8px;
+	background: var(--surface);
+
+	> button {
+		width: 100%;
+		min-width: 0;
+		justify-content: flex-start;
+		padding: 7px 10px;
+		border-radius: 0;
+		text-align: left;
+		white-space: normal;
+	}
+}
+
+.main {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-width: 0;
+
+	b,
+	> span {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	> span {
+		color: var(--muted);
+	}
+}
+
+.inner {
+	padding: 4px 12px 12px;
+}

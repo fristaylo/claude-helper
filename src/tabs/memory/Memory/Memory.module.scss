@@ -1,0 +1,17 @@
+.proj {
+	overflow: hidden;
+	border: 1px solid var(--border);
+	border-radius: 9px;
+
+	> button {
+		width: 100%;
+		justify-content: flex-start;
+		padding: 7px 10px;
+		border-radius: 0;
+		background: var(--surface);
+	}
+}
+
+.projBody {
+	padding: 10px;
+}

@@ -1,0 +1,26 @@
+.banner {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	padding: 8px 12px;
+	border-radius: var(--radius);
+	border: 1px solid color-mix(in srgb, var(--b) 40%, transparent);
+	background: color-mix(in srgb, var(--b) 10%, transparent);
+
+	> :global(.codicon) {
+		color: var(--b);
+	}
+}
+
+.info {
+	--b: var(--vscode-charts-blue, #539bf5);
+}
+
+.warn {
+	--b: var(--ask);
+}
+
+.error {
+	--b: var(--deny);
+}

@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => ({
 		outDir: "dist",
 		emptyOutDir: true,
 		target: "node18",
-		ssr: "src/extension.ts",
+		ssr: "src/host/extension.ts",
 		sourcemap: mode !== "production",
 		minify: mode === "production",
 		rollupOptions: {

@@ -1,0 +1,15 @@
+.editor {
+	width: 100%;
+	min-height: calc(100vh - 230px);
+	padding: 14px 16px;
+	border-radius: var(--radius);
+	font-family: var(--mono);
+	font-size: var(--vscode-editor-font-size, 13px);
+	line-height: 1.6;
+	tab-size: 4;
+	background: var(--vscode-editor-background);
+}
+
+.compact {
+	min-height: 180px;
+}

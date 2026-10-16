@@ -1,0 +1,49 @@
+.plug {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+	padding: 10px 11px;
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	background: var(--surface);
+	min-width: 0;
+
+	&.off > :first-child,
+	&.off .main {
+		opacity: 0.6;
+	}
+}
+
+.main {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+
+	b {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		align-items: center;
+	}
+
+	p {
+		margin: 0;
+		color: var(--muted);
+		word-break: break-word;
+	}
+
+	p.line {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+.side {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+	flex-shrink: 0;
+}

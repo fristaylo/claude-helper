@@ -1,0 +1,71 @@
+.rule {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 38px;
+	padding: 5px 6px 5px 10px;
+	border-radius: 8px;
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--k);
+	background: var(--surface);
+	animation: fadeIn 0.2s ease-out;
+
+	&:hover {
+		background: var(--surface-2);
+
+		.actions {
+			opacity: 1;
+		}
+	}
+}
+
+.spec {
+	flex: 1;
+	min-width: 0;
+	overflow-wrap: anywhere;
+	cursor: text;
+	padding: 2px 4px;
+	border-radius: 4px;
+
+	&:hover {
+		background: var(--surface-2);
+	}
+}
+
+.edit {
+	flex: 1;
+	font-family: var(--mono);
+	padding: 3px 8px;
+}
+
+.badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	flex-shrink: 0;
+	padding: 2px 8px;
+	border-radius: 6px;
+	font-size: 0.86em;
+	font-weight: 600;
+	color: var(--k);
+	background: color-mix(in srgb, var(--k) 13%, transparent);
+
+	:global(.codicon) {
+		font-size: 13px;
+	}
+}
+
+.actions {
+	display: flex;
+	gap: 2px;
+	flex-shrink: 0;
+	opacity: 0.4;
+	transition: opacity 0.15s;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+}

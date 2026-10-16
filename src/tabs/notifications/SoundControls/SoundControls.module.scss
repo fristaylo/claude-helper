@@ -1,0 +1,42 @@
+.volume {
+	position: relative;
+	display: flex;
+
+	&:hover .pop,
+	&:focus-within .pop {
+		visibility: visible;
+		opacity: 1;
+	}
+}
+
+.pop {
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	padding: 8px 6px 6px;
+	transform: translateX(-50%);
+	color: var(--fg);
+	background: var(--vscode-editorWidget-background, var(--vscode-dropdown-background));
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	box-shadow: var(--shadow);
+	visibility: hidden;
+	opacity: 0;
+	transition:
+		opacity 0.12s,
+		visibility 0.12s;
+
+	input {
+		writing-mode: vertical-lr;
+		direction: rtl;
+		width: 16px;
+		height: 90px;
+		margin: 0;
+		accent-color: var(--accent);
+	}
+}

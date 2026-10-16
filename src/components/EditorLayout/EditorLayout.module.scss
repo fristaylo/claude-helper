@@ -1,0 +1,19 @@
+.dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--accent);
+	box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 18px;
+}
+
+@media (min-width: 1000px) {
+	.grid {
+		grid-template-columns: minmax(300px, 400px) 1fr;
+	}
+}

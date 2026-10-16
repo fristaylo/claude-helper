@@ -1,0 +1,14 @@
+.market {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	padding: 6px 8px;
+	border-radius: 7px;
+	background: var(--surface);
+}
+
+.src {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
