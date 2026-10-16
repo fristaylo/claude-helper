@@ -1,7 +1,7 @@
 import { execFile, spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { readFile, stat } from "node:fs/promises";
-import { homedir } from "node:os";
+import { readFile, stat, writeFile } from "node:fs/promises";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import * as vscode from "vscode";
@@ -112,24 +112,43 @@ async function collectDiff(root: string, untracked: boolean) {
 	return diff.length > LIMIT ? `${diff.slice(0, LIMIT)}\n[diff truncated]` : diff;
 }
 
-function askClaude(bin: string, model: CommitModel, effort: string, cwd: string, prompt: string) {
-	const args = [
-		"-p",
-		"--model",
-		model,
-		...(effort ? ["--effort", effort] : []),
-		"--tools",
-		"",
-		"--strict-mcp-config",
-		"--no-session-persistence",
-		"--settings",
-		'{"disableAllHooks":true}',
-	];
+async function askClaude(bin: string, model: CommitModel, effort: string, cwd: string, prompt: string) {
+	const settings = join(tmpdir(), "claude-helper-settings.json");
+	await writeFile(settings, '{"disableAllHooks":true}');
+	const out = await runClaude(
+		bin,
+		[
+			"-p",
+			"--model",
+			model,
+			...(effort ? ["--effort", effort] : []),
+			"--tools",
+			"",
+			"--strict-mcp-config",
+			"--no-session-persistence",
+			"--settings",
+			settings,
+		],
+		cwd,
+		TIMEOUT,
+		prompt,
+	);
+	const text = out
+		.trim()
+		.replace(/^```[^\n]*\n([\s\S]*?)\n?```$/, "$1")
+		.trim();
+	if (!text) throw new Error("claude returned an empty message");
+	return text;
+}
+
+export function runClaude(bin: string, args: string[], cwd: string, timeout: number, input = "") {
 	const shell = /\.(cmd|bat)$/i.test(bin);
+	if (shell && args.some((a) => /["%\r\n]/.test(a)))
+		throw new Error("Unsupported characters in claude arguments");
 	const child = shell
 		? spawn(
 				`"${bin}"`,
-				args.map((a) => `"${a.replace(/"/g, '\\"')}"`),
+				args.map((a) => `"${a}"`),
 				{ cwd, shell, windowsHide: true },
 			)
 		: spawn(bin, args, { cwd, windowsHide: true });
@@ -141,7 +160,7 @@ function askClaude(bin: string, model: CommitModel, effort: string, cwd: string,
 				execFile("taskkill", ["/pid", String(child.pid), "/T", "/F"], { windowsHide: true }, () => {});
 			else child.kill();
 			reject(new Error("claude timed out"));
-		}, TIMEOUT);
+		}, timeout);
 		child.stdout.setEncoding("utf8");
 		child.stderr.setEncoding("utf8");
 		child.stdout.on("data", (d: string) => {
@@ -157,19 +176,14 @@ function askClaude(bin: string, model: CommitModel, effort: string, cwd: string,
 		});
 		child.on("close", (code) => {
 			clearTimeout(timer);
-			if (code !== 0) return reject(new Error((err || out).trim() || `claude exited with code ${code}`));
-			const text = out
-				.trim()
-				.replace(/^```[^\n]*\n([\s\S]*?)\n?```$/, "$1")
-				.trim();
-			if (text) resolve(text);
-			else reject(new Error("claude returned an empty message"));
+			if (code !== 0) reject(new Error((err || out).trim() || `claude exited with code ${code}`));
+			else resolve(out);
 		});
-		child.stdin.end(prompt, "utf8");
+		child.stdin.end(input, "utf8");
 	});
 }
 
-async function findClaude(custom: string) {
+export async function findClaude(custom: string) {
 	const home = homedir();
 	const own = custom.trim().replace(/^~(?=$|[\\/])/, home);
 	if (own && existsSync(own)) return own;

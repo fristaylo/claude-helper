@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { parseAgent, serializeAgent } from "./agent";
+import { indexAdd, indexRemove, indexRename, slug } from "./memory";
 
 const claudeGenerated = String.raw`---
 name: code-reviewer
@@ -30,4 +31,17 @@ assert.equal(b.prompt, "Line 1\n\nLine: 2");
 
 assert.deepEqual(parseAgent("y.md", "just a prompt").meta, {});
 assert.equal(parseAgent("z.md", "---\r\nname: z\r\ndescription: d\r\n---\r\nbody\r\n").meta.name, "z");
+
+assert.equal(slug(String.raw`c:\Users\andru\Desktop\claude-helper`), "c--Users-andru-Desktop-claude-helper");
+
+assert.equal(indexAdd(null, "a", "a.md", "desc"), "- [a](a.md) — desc\n");
+assert.equal(
+	indexAdd("- [a](a.md) — x", "b", "b.md", "two\nlines"),
+	"- [a](a.md) — x\n- [b](b.md) — two lines\n",
+);
+assert.equal(
+	indexRename("- [a](a.md) — x\n- [b](b.md) — y\n", "a.md", "c.md"),
+	"- [a](c.md) — x\n- [b](b.md) — y\n",
+);
+assert.equal(indexRemove("- [a](a.md) — x\n- [b](b.md) — y\n", "a.md"), "- [b](b.md) — y\n");
 console.log("agent.check: ok");

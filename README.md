@@ -1,12 +1,16 @@
 # Claude Helper
 
-A friendly VS Code UI for your global Claude Code setup, with notifications and commit messages written by Claude.
+A friendly VS Code UI for your project and global Claude Code setup, with notifications and commit messages written by Claude.
 
 ## Features
 
-- **Agents** — browse, create, edit and delete subagents.
-- **CLAUDE.md** — edit global memory with a Markdown preview.
-- **Permissions** — manage `allow`, `ask` and `deny` rules with a rule builder.
+- **Project / Global switch** — every tab below works on either the current project (`<workspace>/.claude`) or your global `~/.claude`.
+- **Agents** — browse, create, edit and delete subagents, with color and icon pickers.
+- **Skills** — browse and edit skills and their files.
+- **CLAUDE.md** — edit instructions with a Markdown preview.
+- **Memory** — browse Claude Code's auto memory notes (`~/.claude/projects/<project>/memory`).
+- **Permissions** — manage `allow`, `ask` and `deny` rules with a rule builder. Project rules are stored in `.claude/settings.local.json`, global ones in `settings.json`.
+- **Plugins** — manage Claude Code plugins (global only).
 - **Notifications** — choose a sound and popup for each Claude Code event, with a preview.
 - **Commits** — set up the instructions, model and options for commit messages.
 - **Bell in the status bar** — mute or unmute all notifications in one click.

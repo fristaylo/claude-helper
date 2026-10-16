@@ -1,7 +1,7 @@
 {
 	"name": "claude-helper",
 	"displayName": "Claude Helper",
-	"description": "Edit global Claude Code memory (CLAUDE.md), subagents and permission rules, get sound and popup notifications for Claude Code events and generate commit messages",
+	"description": "Manage project and global Claude Code config: CLAUDE.md, subagents, skills, auto memory, permission rules and plugins. Get sound and popup notifications for Claude Code events and generate commit messages",
 	"version": "0.3.1",
 	"publisher": "fristaylo",
 	"license": "MIT",
@@ -26,6 +26,9 @@
 		"subagents",
 		"CLAUDE.md",
 		"permissions",
+		"skills",
+		"memory",
+		"plugins",
 		"notifications",
 		"commit message"
 	],

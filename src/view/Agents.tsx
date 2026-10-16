@@ -1,45 +1,9 @@
 import { useState } from "react";
-import { AGENT_NAME, type Agent, EFFORTS, type Meta } from "../shared";
+import { AGENT_NAME, type Agent, EFFORTS, type Meta, type Scope } from "../shared";
 import { call, onSaveKey, run } from "./rpc";
-import { Empty, Icon, Segmented } from "./ui";
+import { ColorPicker, Empty, Icon, IconPicker, Segmented, metaColor, metaIcon } from "./ui";
 
-const COLORS: Record<string, string> = {
-	red: "#e5534b",
-	orange: "#e0823d",
-	yellow: "#d4a72c",
-	green: "#57ab5a",
-	cyan: "#39c5cf",
-	blue: "#539bf5",
-	purple: "#b083f0",
-	pink: "#e275ad",
-};
 const MODELS = ["inherit", "sonnet", "opus", "haiku"];
-const ICONS = [
-	"hubot",
-	"robot",
-	"rocket",
-	"beaker",
-	"bug",
-	"code",
-	"terminal",
-	"tools",
-	"book",
-	"search",
-	"shield",
-	"lock",
-	"zap",
-	"flame",
-	"lightbulb",
-	"eye",
-	"checklist",
-	"git-merge",
-	"database",
-	"cloud",
-	"globe",
-	"paintcan",
-	"telescope",
-	"mortar-board",
-];
 const TOOLS = [
 	"Read",
 	"Write",
@@ -57,8 +21,6 @@ const TOOLS = [
 ];
 
 const agentName = (a: Agent) => String(a.meta.name || a.file.replace(/\.md$/, ""));
-const agentColor = (meta: Meta) => COLORS[String(meta.color)] ?? "var(--accent)";
-const agentIcon = (meta: Meta) => (ICONS.includes(String(meta.icon)) ? String(meta.icon) : "hubot");
 const toolsOf = (meta: Meta) => {
 	const t = meta.tools;
 	if (Array.isArray(t)) return t.map(String);
@@ -70,11 +32,11 @@ const toolsOf = (meta: Meta) => {
 		: [];
 };
 
-export function Agents({ agents }: { agents: Agent[] }) {
+export function Agents({ scope, agents }: { scope: Scope; agents: Agent[] }) {
 	const [open, setOpen] = useState<{ agent?: Agent }>();
 	const [q, setQ] = useState("");
 
-	if (open) return <AgentEditor agent={open.agent} onClose={() => setOpen(undefined)} />;
+	if (open) return <AgentEditor scope={scope} agent={open.agent} onClose={() => setOpen(undefined)} />;
 
 	const needle = q.toLowerCase();
 	const shown = agents.filter((a) =>
@@ -94,10 +56,11 @@ export function Agents({ agents }: { agents: Agent[] }) {
 				</button>
 			</div>
 			{agents.length === 0 ? (
-				<Empty icon="hubot" title="No agents yet">
+				<Empty icon="hubot" title={scope === "project" ? "No project agents yet" : "No agents yet"}>
 					<p>
-						Subagents are specialised assistants with their own prompt, tools and model. Claude Code delegates
-						tasks to them automatically or when you mention them.
+						{scope === "project"
+							? "Project agents live in this workspace's .claude/agents folder and are available only here. Claude Code delegates tasks to them automatically or when you mention them."
+							: "Subagents are specialised assistants with their own prompt, tools and model. Claude Code delegates tasks to them automatically or when you mention them."}
 					</p>
 					<button type="button" className="primary" onClick={() => setOpen({})}>
 						<Icon name="sparkle" /> Create your first agent
@@ -112,12 +75,12 @@ export function Agents({ agents }: { agents: Agent[] }) {
 								type="button"
 								key={a.file}
 								className="card"
-								style={{ "--agent": agentColor(a.meta) } as React.CSSProperties}
+								style={{ "--agent": metaColor(a.meta) } as React.CSSProperties}
 								onClick={() => setOpen({ agent: a })}
 							>
 								<div className="card-head">
 									<span className="avatar">
-										<Icon name={agentIcon(a.meta)} />
+										<Icon name={metaIcon(a.meta, "hubot")} />
 									</span>
 									<div className="card-title">
 										<div className="name">{agentName(a)}</div>
@@ -139,7 +102,7 @@ export function Agents({ agents }: { agents: Agent[] }) {
 	);
 }
 
-function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void }) {
+function AgentEditor({ scope, agent, onClose }: { scope: Scope; agent?: Agent; onClose: () => void }) {
 	const [file, setFile] = useState(agent?.file ?? null);
 	const [form, setForm] = useState(() => ({
 		name: agent ? agentName(agent) : "",
@@ -175,13 +138,13 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 			icon: form.icon,
 			effort: form.effort,
 		};
-		const next = await run(call("saveAgent", file, meta, form.prompt), `Agent “${form.name}” saved`);
+		const next = await run(call("saveAgent", scope, file, meta, form.prompt), `Agent “${form.name}” saved`);
 		if (!next) return;
 		setFile(next);
 		setSaved(JSON.stringify(form));
 	};
 	const remove = async () => {
-		if (file && (await run(call("deleteAgent", file)))) onClose();
+		if (file && (await run(call("deleteAgent", scope, file)))) onClose();
 	};
 	const addCustom = () => {
 		const t = customTool.trim();
@@ -192,7 +155,7 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 	return (
 		<div
 			className="page editor-page"
-			style={{ "--agent": agentColor(form) } as React.CSSProperties}
+			style={{ "--agent": metaColor(form) } as React.CSSProperties}
 			onKeyDown={onSaveKey(save)}
 		>
 			<div className="toolbar">
@@ -205,14 +168,18 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 					<Icon name="arrow-left" />
 				</button>
 				<span className="avatar small">
-					<Icon name={agentIcon(form)} />
+					<Icon name={metaIcon(form, "hubot")} />
 				</span>
 				<h2 className="title">{form.name || "New agent"}</h2>
 				{dirty && <span className="dot" title="Unsaved changes" />}
 				<span className="grow" />
 				{file && (
 					<>
-						<button type="button" className="ghost" onClick={() => run(call("open", `agents/${file}`))}>
+						<button
+							type="button"
+							className="ghost"
+							onClick={() => run(call("open", scope, `agents/${file}`))}
+						>
 							<Icon name="go-to-file" /> File
 						</button>
 						<button type="button" className="ghost danger" onClick={remove}>
@@ -257,7 +224,7 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 						<span className={`help ${nameError ? "error" : ""}`}>
 							{nameError
 								? "Only lowercase letters, digits and single hyphens"
-								: `Saved as agents/${form.name || "name"}.md`}
+								: `Saved as ${scope === "project" ? ".claude/" : ""}agents/${form.name || "name"}.md`}
 						</span>
 					</label>
 
@@ -292,43 +259,12 @@ function AgentEditor({ agent, onClose }: { agent?: Agent; onClose: () => void })
 
 					<div className="field">
 						<span className="label">Color</span>
-						<div className="swatches">
-							<button
-								type="button"
-								title="No color"
-								className={`swatch none ${form.color ? "" : "on"}`}
-								onClick={() => set("color", "")}
-							>
-								<Icon name="circle-slash" />
-							</button>
-							{Object.entries(COLORS).map(([c, hex]) => (
-								<button
-									type="button"
-									key={c}
-									title={c}
-									className={`swatch ${form.color === c ? "on" : ""}`}
-									style={{ background: hex }}
-									onClick={() => set("color", c)}
-								/>
-							))}
-						</div>
+						<ColorPicker value={form.color} onChange={(c) => set("color", c)} />
 					</div>
 
 					<div className="field">
 						<span className="label">Icon</span>
-						<div className="swatches">
-							{ICONS.map((i) => (
-								<button
-									type="button"
-									key={i}
-									title={i}
-									className={`swatch glyph ${agentIcon(form) === i ? "on" : ""}`}
-									onClick={() => set("icon", i)}
-								>
-									<Icon name={i} />
-								</button>
-							))}
-						</div>
+						<IconPicker value={metaIcon(form, "hubot")} onChange={(i) => set("icon", i)} />
 					</div>
 
 					<div className="field">

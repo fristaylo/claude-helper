@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { KINDS, type Kind, type Rules } from "../shared";
+import { KINDS, type Kind, type Rules, type Scope } from "../shared";
 import { call, run, toast } from "./rpc";
 import { Empty, Icon, Segmented } from "./ui";
 
@@ -47,7 +47,17 @@ function parseRule(rule: string) {
 
 const toolIcon = (tool: string) => TOOL_ICONS[tool] ?? (tool.startsWith("mcp__") ? "plug" : "tools");
 
-export function Permissions({ rules, error }: { rules: Rules; error?: string }) {
+export function Permissions({
+	scope,
+	rules,
+	settingsFile,
+	error,
+}: {
+	scope: Scope;
+	rules: Rules;
+	settingsFile: string;
+	error?: string;
+}) {
 	const [kind, setKind] = useState<Kind>("deny");
 	const [q, setQ] = useState("");
 	const [tool, setTool] = useState("Bash");
@@ -57,7 +67,7 @@ export function Permissions({ rules, error }: { rules: Rules; error?: string }) 
 	const needle = q.toLowerCase();
 	const shown = list.filter((r) => r.toLowerCase().includes(needle));
 
-	const apply = (patch: Partial<Rules>, ok?: string) => run(call("setRules", patch), ok);
+	const apply = (patch: Partial<Rules>, ok?: string) => run(call("setRules", scope, patch), ok);
 
 	const add = async () => {
 		const s = spec.trim();
@@ -104,8 +114,8 @@ export function Permissions({ rules, error }: { rules: Rules; error?: string }) 
 					}))}
 				/>
 				<span className="grow" />
-				<button type="button" className="ghost" onClick={() => run(call("open", "settings.json"))}>
-					<Icon name="json" /> settings.json
+				<button type="button" className="ghost" onClick={() => run(call("open", scope, settingsFile))}>
+					<Icon name="json" /> {settingsFile}
 				</button>
 			</div>
 

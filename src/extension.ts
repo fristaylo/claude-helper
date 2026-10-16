@@ -22,7 +22,7 @@ export function activate(ctx: vscode.ExtensionContext) {
 			try {
 				if (!Object.hasOwn(api, method)) throw new Error(`Unknown method ${method}`);
 				webview.postMessage({ id, result: await (api as any)[method](...params) });
-				if (method !== "load") refresh();
+				if (!method.startsWith("load")) refresh();
 			} catch (e: any) {
 				webview.postMessage({ id, error: e?.message ?? String(e) });
 			}
@@ -37,9 +37,13 @@ export function activate(ctx: vscode.ExtensionContext) {
 	const watch = () => {
 		for (const w of watchers) w.dispose();
 		const dir = vscode.Uri.file(configDir());
+		const folder = vscode.workspace.workspaceFolders?.[0];
 		watchers = [
 			new vscode.RelativePattern(dir, "{CLAUDE.md,settings.json}"),
-			new vscode.RelativePattern(vscode.Uri.joinPath(dir, "agents"), "*.md"),
+			new vscode.RelativePattern(dir, "agents/*.md"),
+			new vscode.RelativePattern(dir, "skills/**"),
+			new vscode.RelativePattern(dir, "projects/*/memory/*.md"),
+			...(folder ? [new vscode.RelativePattern(folder, ".claude/**")] : []),
 		].map((pattern) => {
 			const w = vscode.workspace.createFileSystemWatcher(pattern);
 			w.onDidChange(refresh);
@@ -86,6 +90,10 @@ export function activate(ctx: vscode.ExtensionContext) {
 			host(panel.webview, panel.onDidDispose);
 		}),
 		vscode.commands.registerCommand("claudeHelper.refresh", refresh),
+		vscode.workspace.onDidChangeWorkspaceFolders(() => {
+			watch();
+			refresh();
+		}),
 		vscode.workspace.onDidChangeConfiguration((e) => {
 			if (!e.affectsConfiguration("claudeHelper")) return;
 			if (e.affectsConfiguration("claudeHelper.configDir")) watch();
