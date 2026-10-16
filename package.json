@@ -2,7 +2,7 @@
 	"name": "claude-helper",
 	"displayName": "Claude Helper",
 	"description": "Manage project and global Claude Code config: CLAUDE.md, subagents, skills, auto memory, permission rules and plugins. Get sound and popup notifications for Claude Code events and generate commit messages",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"publisher": "fristaylo",
 	"icon": "resources/icon.png",
 	"repository": {
